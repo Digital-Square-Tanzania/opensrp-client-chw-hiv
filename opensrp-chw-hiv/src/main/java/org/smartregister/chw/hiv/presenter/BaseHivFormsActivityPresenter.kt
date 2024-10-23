@@ -3,7 +3,6 @@ package org.smartregister.chw.hiv.presenter
 import android.app.Activity
 import android.database.sqlite.SQLiteException
 import android.util.Log
-import com.nerdstone.neatandroidstepper.core.domain.StepperActions
 import com.nerdstone.neatformcore.domain.model.NFormViewData
 import org.apache.commons.lang3.tuple.Triple
 import org.json.JSONException

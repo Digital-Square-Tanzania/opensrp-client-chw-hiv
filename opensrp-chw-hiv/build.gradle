@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'jacoco-android'
+apply plugin: 'jacoco'
 apply plugin: 'maven-publish'
 
 jacoco {
@@ -13,6 +13,22 @@ jacoco {
 def githubProperties = new Properties()
 if (rootProject.file("github.properties").exists()) {
     githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
+}
+
+allprojects {
+    repositories {
+        maven {
+
+            name = "GitHubPackages"
+
+            url = uri("https://maven.pkg.github.com/Digital-Square-Tanzania/neat-form")
+            credentials {
+                username = githubProperties['gpr.usr'] ?: System.getenv("GPR_USER")
+                password = githubProperties['gpr.key'] ?: System.getenv("GPR_API_KEY")
+            }
+
+        }
+    }
 }
 
 android {
@@ -171,6 +187,10 @@ publishing {
     }
 }
 
+configurations.all {
+    exclude group: 'com.nerdstone', module: 'neat-android-stepper'
+}
+
 dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -183,6 +203,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
         exclude group: 'com.rengwuxian.materialedittext', module: 'library'
+        exclude group: 'com.simprints', module: 'libsimprints'
+        exclude group: 'io.ona.CircleProgressbar', module: 'lib'
     }
 
     api("org.smartregister:android-p2p-sync:0.3.3-SNAPSHOT") {
@@ -198,6 +220,7 @@ dependencies {
         exclude group: 'androidx.appcompat', module: 'appcompat'
         exclude group: 'androidx.constraintlayout', module: 'constraintlayout'
         exclude group: 'androidx.lifecycle', module: 'lifecycle-extensions'
+        exclude group: ' com.nerdstone', module: 'neat-android-stepper'
     }
 
     api('org.smartregister:opensrp-client-chw-anc:0.1.61-SNAPSHOT@aar') {
@@ -209,9 +232,9 @@ dependencies {
     }
 
     // Koin for Android dependency injection
-    api "org.koin:koin-android:$koinVersion"
-    api "org.koin:koin-androidx-scope:$koinVersion"
-    api "org.koin:koin-androidx-viewmodel:$koinVersion"
+    api "io.insert-koin:koin-android:$koinVersion"
+    api "io.insert-koin:koin-androidx-scope:$koinVersion"
+    api "io.insert-koin:koin-androidx-viewmodel:$koinVersion"
 
     implementation('org.smartregister:opensrp-client-configurable-views:1.1.2-SNAPSHOT@aar') {
         transitive = true
@@ -237,7 +260,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     // compatibility issue when upgraded to 24.*
     implementation 'com.google.guava:guava:20.0'
-    implementation 'id.zelory:compressor:1.0.4'
+    implementation 'id.zelory:compressor:2.1.1'
     implementation 'com.wdullaer:materialdatetimepicker:3.6.4'
     implementation "androidx.core:core-ktx:1.1.0"
 
@@ -245,7 +268,7 @@ dependencies {
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
     implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
 
-    testImplementation "org.koin:koin-test:$koinVersion"
+    testImplementation "io.insert-koin:koin-test:$koinVersion"
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.3.1'
     testImplementation "org.robolectric:shadows-multidex:4.3.1"
